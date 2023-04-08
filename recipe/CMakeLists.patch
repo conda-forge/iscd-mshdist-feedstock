@@ -1,0 +1,34 @@
+--- CMakeLists.txt	2023-01-02 19:04:11.000000000 +0100
++++ CMakeLists_conda.txt	2023-04-08 22:04:20.856073824 +0200
+@@ -1,19 +1,18 @@
+-cmake_minimum_required(VERSION 2.8)
++cmake_minimum_required(VERSION 2.8...3.26)
+ set(CMAKE_BUILD_TYPE  "Release")
+ SET(CMAKE_C_FLAGS   "-w -O3")
+-set(CMAKE_MACOSX_RPATH 1)
+-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+ 
+-project(libMshdist)
++project(libMshdist C)
+ file(                  GLOB_RECURSE sources sources/*)
+ file(                  GLOB_RECURSE headers sources/*.h)
+ add_library(           libMshdist SHARED ${sources})
+ set_target_properties( libMshdist PROPERTIES PREFIX "")
+ 
+-find_library(          Commons NAMES Commons HINTS "$ENV{HOME}/lib" required)
++find_library(          Commons NAMES Commons HINTS "${CMAKE_INSTALL_PREFIX}/lib" required)
+ FIND_LIBRARY(          M_LIB m)
+ SET(                   EXTRA_LIBS ${M_LIB} "-lpthread")
+-include_directories(   "$ENV{HOME}/include")
++include_directories(   "${CMAKE_INSTALL_PREFIX}/include")
++link_directories(     "${CMAKE_INSTALL_PREFIX}/lib")
+ target_link_libraries( libMshdist ${EXTRA_LIBS} ${Commons})
+ 
+ #Executable
+@@ -23,5 +22,5 @@
+ install(               TARGETS mshdist RUNTIME  DESTINATION "bin")
+ install(               TARGETS libMshdist LIBRARY DESTINATION "lib")
+ install(               FILES   ${headers} DESTINATION "include")
+-set_target_properties( mshdist PROPERTIES INSTALL_RPATH "/usr/local/lib")
++set_target_properties( mshdist PROPERTIES INSTALL_RUNTIME "${CMAKE_INSTALL_PREFIX}/bin")
+ 
